@@ -1,0 +1,94 @@
+local UIlib = loadstring(game:HttpGet("https://pastebin.com/raw/4Xnm6ajk"))()
+
+
+local Win = UIlib:Window("Anime Fighters")
+
+local TabFarm = Win:Tab("Autofarm")
+
+local B = UIlib:SButton("Mana#9724", function() 
+setclipboard("Mana#9724")
+end)
+
+local B2 = UIlib:SButton("Discord Server", function() 
+    setclipboard("discord.gg/HXFuH8ZhMM")
+end)
+
+local plr = game.Players.LocalPlayer
+local WorldCheck = game.workspace.Worlds[plr.World.Value]
+local EnemyTable = {}
+for i,v in pairs(WorldCheck.Enemies:GetChildren()) do
+    if not table.find(EnemyTable, v.Name) then
+        table.insert(EnemyTable, v.Name)
+    end
+end
+
+TabFarm:Dropdown("Select Enemy", EnemyTable, function(v)
+SelectEnemy = v
+end)
+
+TabFarm:Toggle("Farm Selected Enemy", false, function(t)
+StartFarm = t
+end)
+
+task.spawn(function()
+    while task.wait() do
+        if StartFarm then
+            pcall(function()
+                for i,v in pairs(workspace.Pets:GetChildren()) do
+                    if v.Data.Owner.Value == plr then
+                        game:GetService("ReplicatedStorage").Bindable.SendPet:Fire(WorldCheck.Enemies[SelectEnemy], true, false)
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+TabFarm:Toggle("TP to Enemy", false, function(t)
+TPEnemy = t
+end)
+
+task.spawn(function()
+    while task.wait() do
+        if TPEnemy then
+            pcall(function()
+               plr.Character.HumanoidRootPart.CFrame = WorldCheck.Enemies[SelectEnemy].HumanoidRootPart.CFrame
+            end)
+        end
+    end
+end)
+
+TabFarm:line()
+
+TabFarm:Toggle("Clicker DMG", false, function(t)
+ClickerDamage = t
+end)
+
+task.spawn(function()
+    while task.wait() do
+        if ClickerDamage then
+            pcall(function()
+                coroutine.wrap(function()
+                game:GetService("ReplicatedStorage").Remote.ClickerDamage:FireServer()
+                end)()
+            end)
+        end
+    end
+end)
+
+TabFarm:Toggle("Auto Collect Yen", false, function(t)
+AutoPickYen = t
+end)
+
+task.spawn(function()
+    while task.wait() do
+        if AutoPickYen then
+            pcall(function()
+                game:GetService("ReplicatedStorage").Remote.Pickup:FireServer("Gem", nil, "Yen")
+                for i,v in pairs(game:GetService("Workspace").Effects.Yen:GetChildren()) do
+                        v.CFrame = plr.Character.HumanoidRootPart.CFrame
+                end
+            end)
+        end
+    end
+end)
